@@ -2,7 +2,20 @@
 
 set -e
 
-patches="$(readlink -f -- $1)"
+patches=~/android/rrtreble/patches
+localManifestBranch=android-8.1
+
+if [ -z "$local_patches" ];then
+    if [ -d patches ];then
+        ( cd patches; git fetch; git reset --hard; git checkout origin/$localManifestBranch)
+    else
+        git clone https://github.com/phhusson/treble_patches patches -b $localManifestBranch
+    fi
+else
+    rm -Rf patches
+    mkdir patches
+    unzip  "$local_patches" -d patches
+fi
 
 for project in $(cd $patches/patches; echo *);do
 	p="$(tr _ / <<<$project |sed -e 's;platform/;;g')"
